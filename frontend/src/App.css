@@ -1,0 +1,19 @@
+body {
+  background: rgb(21,203,77);
+  background: linear-gradient(180deg, rgba(21,203,77,1) 0%, rgba(14,108,209,1) 100%);
+  background-repeat: no-repeat; 
+  background-attachment: fixed;
+}
+
+button.close:hover {
+  color:red;
+}
+
+button.close {
+  color:white;
+}
+
+img {
+  min-width:100%;
+  max-height:250px;
+}
