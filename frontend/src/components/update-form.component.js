@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import {formIsValid, generateUserPayload, renderErrors} from './form-functions.js';
+import {formIsValid, generateUserPayload, renderErrors, getAPIDomain} from '../utils.js';
 
 export default class UpdateForm extends Component {
     constructor(props) {
@@ -47,7 +47,7 @@ export default class UpdateForm extends Component {
         const payload = generateUserPayload(null,this.state.notify); // email is endpoint URL, so keeping email out of the payload
         let success = false;
         try {
-            await axios.post(`http://192.168.0.224:5000/api/user/update/${this.state.email}`,payload,{headers: {'Content-Type':'application/json'}});
+            await axios.post(`${getAPIDomain()}/api/user/update/${this.state.email}`,payload,{headers: {'Content-Type':'application/json'}});
             success = true;
         }
         catch(err) {

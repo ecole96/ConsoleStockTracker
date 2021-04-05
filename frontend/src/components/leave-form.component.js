@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import './form-functions';
-import {formIsValid, renderErrors} from './form-functions.js';
+import '../utils';
+import {formIsValid, renderErrors, getAPIDomain} from '../utils.js';
 
 export default class LeaveForm extends Component {
     constructor(props) {
@@ -43,7 +43,7 @@ export default class LeaveForm extends Component {
     async deleteUser() {
         let success = false;
         try {
-            await axios.delete(`http://192.168.0.224:5000/api/user/delete/${this.state.email}`);
+            await axios.delete(`${getAPIDomain()}/api/user/delete/${this.state.email}`);
             success = true;
         }
         catch(err) {

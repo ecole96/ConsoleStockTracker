@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import {formIsValid, generateUserPayload, renderErrors} from './form-functions.js';
+import {formIsValid, generateUserPayload, renderErrors, getAPIDomain} from '../utils.js';
 
 // other form components (update-form and leave-form) are very similar to this one, so the bulk of the comments are here for the sake of avoiding redundancy
 
@@ -56,7 +56,7 @@ export default class JoinForm extends Component {
         const payload = generateUserPayload(this.state.email,this.state.notify); // generate JSON payload for POST request
         let success = false;
         try {
-            await axios.post('http://192.168.0.224:5000/api/user/new',payload,{headers: {'Content-Type':'application/json'}});
+            await axios.post(`${getAPIDomain()}/api/user/new`,payload,{headers: {'Content-Type':'application/json'}});
             success = true;
         }
         catch(err) {

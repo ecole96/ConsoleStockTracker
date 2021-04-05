@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { Component } from 'react';
 import StockTable from './stock-table.component';
+import {getAPIDomain} from '../utils';
 
 // StockStatus component basically serves as the wrapper for the display of all stock data, which consists of four tables (one for each console)
 export default class StockStatus extends Component {
@@ -12,7 +13,8 @@ export default class StockStatus extends Component {
     componentDidMount() {
         var self = this; // for referencing this component in the update() function
         function update() {
-            axios.get('http://192.168.0.224:5000/api/stock/pull_data') // get latest stock data
+            //axios.get('http://192.168.0.224:5000/api/stock/pull_data') // get latest stock data
+            axios.get(`${getAPIDomain()}/api/stock/pull_data`)
             .then(response => {
                 self.setState({ data: response.data.stock, last_runtime: new Date(response.data.last_runtime).toLocaleString('en-US')});
             })
