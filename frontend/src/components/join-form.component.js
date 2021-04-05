@@ -76,7 +76,7 @@ export default class JoinForm extends Component {
                     <label htmlFor="email" className="font-weight-bold">Email*</label>
                     {renderErrors('email',this.state.errors['email'])}
                     <input type="email" className="form-control" name="email" required />
-                    <small className="form-text">Any stock updates will be sent to this email.</small>
+                    <small className="form-text">Any stock updates will be sent to this email. Whitelist <b>{process.env.REACT_APP_SERVICE_EMAIL}</b> to guarantee delivery of stock alerts.</small>
                 </div>
                 <div className="form-group">
                     <label htmlFor="confirm_email" className="font-weight-bold">Confirm Email*</label>
@@ -86,7 +86,7 @@ export default class JoinForm extends Component {
                 <div className="form-group">
                     <label htmlFor="notify" className="font-weight-bold mr-1">Notify me about*</label>
                     {renderErrors('notify',this.state.errors['notify'])}
-                        <fieldset>
+                    <fieldset>
                         <div className="form-check form-check-inline">
                             <input type="checkbox" name="notify" className="form-check-input" value="series_x" />
                             <label className="form-check-label" htmlFor="notify">Microsoft Xbox Series X</label>
