@@ -48,7 +48,7 @@ export default class Actions extends Component {
                 </Alert> 
                 <div className="btn-group" role="group" aria-label="Mailing List Actions">
                     <button type="button" className="btn btn-success btn-lg border border-dark" onClick={() => this.initializeModal("Join Mailing List", <JoinForm toggleModal={this.toggleModal} setSuccessMessage={this.setSuccessMessage} />,"join")}>Join Mailing List</button>
-                    <button type="button" className="btn btn-primary btn-lg border border-dark" onClick={() => this.initializeModal("Update Mailing List",<UpdateForm toggleModal={this.toggleModal} setSuccessMessage={this.setSuccessMessage} />,"update")}>Update Preferences</button>
+                    <button type="button" className="btn btn-primary btn-lg border border-dark" onClick={() => this.initializeModal("Update Preferences",<UpdateForm toggleModal={this.toggleModal} setSuccessMessage={this.setSuccessMessage} />,"update")}>Update Preferences</button>
                     <button type="button" className="btn btn-danger btn-lg border border-dark" onClick={() => this.initializeModal("Leave Mailing List",<LeaveForm toggleModal={this.toggleModal} setSuccessMessage={this.setSuccessMessage} />,"leave")}>Leave Mailing List</button>
                 </div>
                 
