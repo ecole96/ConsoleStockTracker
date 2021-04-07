@@ -84,7 +84,7 @@ function parseData(data,storeName,consoleName) {
     let consoleBySku;
     switch(storeName) {
         case 'Target':
-            stockStatus = !data.product.available_to_promise_network.is_out_of_stock_in_all_online_locations;
+            stockStatus = data.product.available_to_promise_network.is_out_of_stock_in_all_online_locations;
             url = data.product.item.buy_url;
             break;
         case 'Gamestop':
@@ -298,8 +298,8 @@ function main() {
                             gather(WALMART_XBOX, 'All Xboxes', 'Walmart'), gather(WALMART_PS, 'All Playstations', 'Walmart'),
                             gather(TARGET_X, 'Microsoft Xbox Series X', 'Target'), gather(TARGET_S, 'Microsoft Xbox Series S', 'Target'), 
                             gather(TARGET_PS5, 'Sony Playstation 5', 'Target'), gather(TARGET_PS5D, 'Sony Playstation 5 Digital Edition', 'Target'),
-                            gather(GAMESTOP_X, 'Microsoft Xbox Series X', 'Gamestop'), gather(GAMESTOP_S, 'Microsoft Xbox Series S', 'Gamestop'), 
-                            gather(GAMESTOP_PS5, 'Sony Playstation 5', 'Gamestop'), gather(GAMESTOP_PS5D, 'Sony Playstation 5 Digital Edition', 'Gamestop'),
+                            //gather(GAMESTOP_X, 'Microsoft Xbox Series X', 'Gamestop'), gather(GAMESTOP_S, 'Microsoft Xbox Series S', 'Gamestop'), 
+                            //gather(GAMESTOP_PS5, 'Sony Playstation 5', 'Gamestop'), gather(GAMESTOP_PS5D, 'Sony Playstation 5 Digital Edition', 'Gamestop'),
                             gather(NEWEGG_X, 'Microsoft Xbox Series X', 'Newegg'), gather(NEWEGG_S, 'Microsoft Xbox Series S', 'Newegg'), 
                             gather(NEWEGG_PS5, 'Sony Playstation 5', 'Newegg'), gather(NEWEGG_PS5D, 'Sony Playstation 5 Digital Edition', 'Newegg')])
         .then(unorganized => {
