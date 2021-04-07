@@ -84,7 +84,7 @@ function parseData(data,storeName,consoleName) {
     let consoleBySku;
     switch(storeName) {
         case 'Target':
-            stockStatus = data.product.available_to_promise_network.is_out_of_stock_in_all_online_locations;
+            stockStatus = !data.product.available_to_promise_network.is_out_of_stock_in_all_online_locations;
             url = data.product.item.buy_url;
             break;
         case 'Gamestop':
