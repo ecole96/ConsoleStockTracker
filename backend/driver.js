@@ -88,6 +88,7 @@ function parseData(data,storeName,consoleName) {
     let stockStatus;
     let url;
     let consoleBySku;
+    let sku;
     switch(storeName) {
         case 'Target':
             stockStatus = !data.product.available_to_promise_network.is_out_of_stock_in_all_online_locations;
@@ -121,23 +122,28 @@ function parseData(data,storeName,consoleName) {
             }
             break;
         case 'Microsoft':
-            consoleBySku = {'RRT-00001':'Microsoft Xbox Series X', 'RRS-00001':'Microsoft Xbox Series S'};
+            consoleBySku = {'RRT-00001': { 'console':'Microsoft Xbox Series X', 
+                                           'url':'https://www.xbox.com/en-us/configure/8wj714n3rbtl?ranMID=24542&ranEAID=k9iPH82yDyA&ranSiteID=k9iPH82yDyA-aMfdx535fcXIPOw7KfBFIg&epi=k9iPH82yDyA-aMfdx535fcXIPOw7KfBFIg&irgwc=1&OCID=AID2000142_aff_7593_1243925&tduid=%28ir__odh0bj2qqokfqgzzkk0sohznyv2xpdgh3mq3nssy00%29%287593%29%281243925%29%28k9iPH82yDyA-aMfdx535fcXIPOw7KfBFIg%29%28%29&irclickid=_odh0bj2qqokfqgzzkk0sohznyv2xpdgh3mq3nssy00'
+                                         }, 
+                            'RRS-00001': { 'console':'Microsoft Xbox Series S',
+                                           'url':'https://www.xbox.com/en-us/configure/942j774tp9jn?ranMID=24542&ranEAID=k9iPH82yDyA&ranSiteID=k9iPH82yDyA-h3DBcVJYjgYPJDfk49Kv0w&epi=k9iPH82yDyA-h3DBcVJYjgYPJDfk49Kv0w&irgwc=1&OCID=AID2000142_aff_7593_1243925&tduid=%28ir__odh0bj2qqokfqgzzkk0sohznyv2xpdgh63q3nssy00%29%287593%29%281243925%29%28k9iPH82yDyA-h3DBcVJYjgYPJDfk49Kv0w%29%28%29&irclickid=_odh0bj2qqokfqgzzkk0sohznyv2xpdgh63q3nssy00'
+                                         }
+                           };
             for(const item of data.availabilities) {
                 const lot = item.availableLots['0001-01-01T00:00:00.0000000Z']['9000000013'];
                 stockStatus =  (lot.onlineOrderAvailable.toLowerCase() == 'true') && (lot.inStock.toLowerCase() == 'true');
-                url = 'https://www.microsoft.com/en-us/store/b/xboxconsoles?icid=XboxCat_QL1_Consoles';
-                parsed.push({'store': storeName, 'console':consoleBySku[item.inventoryControlSkuId], 'in_stock': stockStatus, 'url': url});
+                sku = item.inventoryControlSkuId;
+                // https://www.microsoft.com/en-us/store/b/xboxconsoles?icid=XboxCat_QL1_Consoles
+                parsed.push({'store': storeName, 'console':consoleBySku[sku]['console'], 'in_stock': stockStatus, 'url': consoleBySku[sku]['url']});
             }
             break;
         case 'Sony':
             consoleBySku = {'3005816':{'console':'Sony Playstation 5', 'url':'https://direct.playstation.com/en-us/consoles/console/playstation5-console.3005816'}, 
                             '3005817':{'console':'Sony Playstation 5 Digital Edition','url':'https://direct.playstation.com/en-us/consoles/console/playstation5-digital-edition-console.3005817'}};
-            let sku;
             for(const item of data.products) {
                 sku = item.code;
                 stockStatus =  item.purchasable && item.stock.stockLevelStatus.toLowerCase() != 'outofstock';
-                url = consoleBySku[sku]['url'];
-                parsed.push({'store': storeName, 'console':consoleBySku[sku]['console'], 'in_stock': stockStatus, 'url': url});
+                parsed.push({'store': storeName, 'console':consoleBySku[sku]['console'], 'in_stock': stockStatus, 'url': consoleBySku[sku]['url']});
             }
     }
 
