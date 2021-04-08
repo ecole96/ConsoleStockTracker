@@ -12,7 +12,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const uri = process.env.ATLAS_URI;
+const uri = process.env.NODE_ENV == 'production' ? process.env.ATLAS_DB_PROD : process.env.ATLAS_DB_DEV;
 mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
 const connection = mongoose.connection;
 connection.once('open', () => {
@@ -27,17 +27,8 @@ app.use('/api/user', userRouter);
 
 // call driver.js / check stock data every minute
 cron.schedule('* * * * *', () => {
-  function dateFormat(toFormat) {
-    return ("0" + toFormat).slice(-2);
-  }
-  let now = new Date();
-  let datetime = dateFormat(now.getMonth()+1) + "/"
-                + dateFormat(now.getDate())  + "/" 
-                + now.getFullYear() + " "  
-                + dateFormat(now.getHours()) + ":"  
-                + dateFormat(now.getMinutes()) + ":" 
-                + dateFormat(now.getSeconds());
-  console.log(`\x1b[1m\x1b[36m${datetime}\x1b[0m ****************************************************`); // current time header for each script run
+  let now = new Date().toLocaleString('en-US');
+  console.log(`\x1b[1m\x1b[36m${now}\x1b[0m ****************************************************`); // current time header for each script run
   driver.main();
 });
 
