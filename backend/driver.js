@@ -17,10 +17,11 @@ function gather(url,consoleName,storeName) {
             // setting proxy to protect from being blocked by retailer APIs
             const proxy = process.env.PROXY_HOST && process.env.PROXY_PORT && process.env.PROXY_USER && process.env.PROXY_PASS ?
                           {host: process.env.PROXY_HOST, port: Number(process.env.PROXY_PORT), auth: {username: process.env.PROXY_USER, password: process.env.PROXY_PASS}}
-                          : {};
-            const config = {headers: headers, proxy: proxy, timeout:15000};
+                          : null;
+            const config = {headers: headers, timeout:15000};
+            if (proxy) config['proxy'] = proxy;
             let response;
-            if(storeName == 'Microsoft') { // Microsoft request requires POST
+            if (storeName == 'Microsoft') { // Microsoft request requires POST
                 const payload = [{"skuId":"RRS-00001","distributorId":"9000000013"},{"skuId":"RRT-00001","distributorId":"9000000013"}];
                 response = await axios.post(url, payload, config);
             }
