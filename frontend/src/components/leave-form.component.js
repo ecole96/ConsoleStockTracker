@@ -43,7 +43,7 @@ export default class LeaveForm extends Component {
     async deleteUser() {
         let success = false;
         try {
-            await axios.delete(`${getAPIDomain()}/api/user/delete/${this.state.email}`);
+            await axios.delete(`${getAPIDomain()}/api/user/delete/${this.state.email}`, {timeout: 15000});
             success = true;
         }
         catch(err) {

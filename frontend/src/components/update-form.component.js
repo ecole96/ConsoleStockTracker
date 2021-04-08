@@ -47,7 +47,7 @@ export default class UpdateForm extends Component {
         const payload = generateUserPayload(null,this.state.notify); // email is endpoint URL, so keeping email out of the payload
         let success = false;
         try {
-            await axios.post(`${getAPIDomain()}/api/user/update/${this.state.email}`,payload,{headers: {'Content-Type':'application/json'}});
+            await axios.post(`${getAPIDomain()}/api/user/update/${this.state.email}`, payload, {headers: {'Content-Type':'application/json'}, timeout: 15000});
             success = true;
         }
         catch(err) {

@@ -56,7 +56,7 @@ export default class JoinForm extends Component {
         const payload = generateUserPayload(this.state.email,this.state.notify); // generate JSON payload for POST request
         let success = false;
         try {
-            await axios.post(`${getAPIDomain()}/api/user/new`,payload,{headers: {'Content-Type':'application/json'}});
+            await axios.post(`${getAPIDomain()}/api/user/new`,payload,{headers: {'Content-Type':'application/json'}, timeout: 15000});
             success = true;
         }
         catch(err) {

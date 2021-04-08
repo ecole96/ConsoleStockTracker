@@ -14,7 +14,7 @@ export default class StockStatus extends Component {
         var self = this; // for referencing this component in the update() function
         function update() {
             //axios.get('http://192.168.0.224:5000/api/stock/pull_data') // get latest stock data
-            axios.get(`${getAPIDomain()}/api/stock/pull_data`)
+            axios.get(`${getAPIDomain()}/api/stock/pull_data`, {timeout: 15000})
             .then(response => {
                 self.setState({ data: response.data.stock, last_runtime: new Date(response.data.last_runtime).toLocaleString('en-US')});
             })
