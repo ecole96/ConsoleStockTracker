@@ -14,17 +14,18 @@ function gather(url,consoleName,storeName) {
     return new Promise(async (resolve, reject) => {
         try {
             const headers = generateHeaders(storeName,consoleName);
-            let response;
             // setting proxy to protect from being blocked by retailer APIs
             const proxy = process.env.PROXY_HOST && process.env.PROXY_PORT && process.env.PROXY_USER && process.env.PROXY_PASS ?
-                          {host: process.env.PROXY_HOST, port: process.env.PROXY_PORT, auth: {username: process.env.PROXY_USER,password: process.env.PROXY_PASS}}
+                          {host: process.env.PROXY_HOST, port: Number(process.env.PROXY_PORT), auth: {username: process.env.PROXY_USER, password: process.env.PROXY_PASS}}
                           : {};
+            const config = {headers: headers, proxy: proxy, timeout:15000};
+            let response;
             if(storeName == 'Microsoft') { // Microsoft request requires POST
                 const payload = [{"skuId":"RRS-00001","distributorId":"9000000013"},{"skuId":"RRT-00001","distributorId":"9000000013"}];
-                response = await axios.post(url, payload, {headers: headers}, {timeout: 15000}, {proxy: proxy});
+                response = await axios.post(url, payload, config);
             }
             else
-                response = await axios.get(url, {headers: headers}, {timeout: 15000}, {proxy: proxy});
+                response = await axios.get(url, config);
 
             let data = parseData(response.data,storeName,consoleName) // extract all necessary data from response
             resolve(data); // return store stock data
