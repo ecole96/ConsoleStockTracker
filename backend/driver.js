@@ -25,11 +25,8 @@ function gather(url,consoleName,storeName) {
                 const payload = [{"skuId":"RRS-00001","distributorId":"9000000013"},{"skuId":"RRT-00001","distributorId":"9000000013"}];
                 response = await axios.post(url, payload, config);
             }
-            else {
-                if(storeName == 'Walmart') config['withCredentials'] = true;
+            else
                 response = await axios.get(url, config);
-
-            }
             let data = parseData(response.data,storeName,consoleName) // extract all necessary data from response
             resolve(data); // return store stock data
         }
@@ -120,7 +117,6 @@ function parseData(data,storeName,consoleName) {
         case 'Walmart': // unlike the above retailers, Walmart's API (and every other retailer below this) allows us to use one call to get information for multiple consoles, so looping through response appropriately
             const consoleById = {'6IGUOXEESSAR':'Microsoft Xbox Series X','4B9GFLRLZYGJ':'Microsoft Xbox Series S', '381J1IR9OWLC':'Sony Playstation 5', '0UDPZF1HYOLP':'Sony Playstation 5 Digital Edition'};
             for(const prod of data.items) {
-                //console.log(prod.canAddToCart,prod.quantity);
                 stockStatus = prod.canAddToCart && prod.quantity > 5 && prod.sellerName == 'Walmart.com';
                 url = "https://walmart.com" + prod.productPageUrl;
                 parsed.push({'store': storeName, 'console': consoleById[prod.productId], 'in_stock': stockStatus, 'url': url })
