@@ -25,9 +25,11 @@ function gather(url,consoleName,storeName) {
                 const payload = [{"skuId":"RRS-00001","distributorId":"9000000013"},{"skuId":"RRT-00001","distributorId":"9000000013"}];
                 response = await axios.post(url, payload, config);
             }
-            else
+            else {
+                if(storeName == 'Walmart') config['withCredentials'] = true;
                 response = await axios.get(url, config);
 
+            }
             let data = parseData(response.data,storeName,consoleName) // extract all necessary data from response
             resolve(data); // return store stock data
         }
@@ -44,6 +46,17 @@ function generateHeaders(storeName,consoleName) {
     if(storeName == 'Sony') { // Sony headers
         headers['referer'] = 'https://direct.playstation.com/';
         headers['Content-Type'] = 'application/json';
+    }
+    else if(storeName == 'Walmart') {
+        headers['accept-language'] = 'en-US,en;q=0.9';
+        headers['cache-control'] = 'max-age=0';
+        headers['cookie'] = 'vtc=; _pxvid=; auth=; type=; ACID=; hasACID=; _abck=; cart-item-count=; DL=; t-loc-zip=; TBV=; TB_Latency_Tracker_100=; TB_Navigation_Preload_01=; TB_SFOU-100=; athrvi=; tb_sw_supported=; com.wm.reflector=; next-day=; location-data=; TB_DC_Flap_Test=; g=; bstc=; mobileweb=0; xpa=; xpm=; TS01b0be75=; TS013ed49a=; akavpau_p8=;';
+        headers['sec-fetch-dest'] = 'document';
+        headers['sec-fetch-mode'] = 'navigate';
+        headers['sec-fetch-site'] = 'none';
+        headers['sec-fetch-user'] = '?1';
+        headers['sec-gpc'] = '1';
+        headers['upgrade-insecure-requests'] = '1';
     }
     else if(['Gamestop','Newegg','Microsoft'].includes(storeName)) { // Gamestop, Newegg, Microsoft headers
         headers['accept-encoding'] =  'gzip, deflate, br';
@@ -108,7 +121,7 @@ function parseData(data,storeName,consoleName) {
             const consoleById = {'6IGUOXEESSAR':'Microsoft Xbox Series X','4B9GFLRLZYGJ':'Microsoft Xbox Series S', '381J1IR9OWLC':'Sony Playstation 5', '0UDPZF1HYOLP':'Sony Playstation 5 Digital Edition'};
             for(const prod of data.items) {
                 //console.log(prod.canAddToCart,prod.quantity);
-                stockStatus = prod.canAddToCart && prod.quantity > 5;
+                stockStatus = prod.canAddToCart && prod.quantity > 5 && prod.sellerName == 'Walmart.com';
                 url = "https://walmart.com" + prod.productPageUrl;
                 parsed.push({'store': storeName, 'console': consoleById[prod.productId], 'in_stock': stockStatus, 'url': url })
             }
@@ -198,15 +211,27 @@ async function updateStock(consoleName,data) {
                 row.stores.push({});
                 storeIndex = row.stores.length - 1;
             }
+
+            // getting the last time the console was seen in stock at this store (before potentially updating value)
+            // if doesn't exist, then the console's never been in stock here (set to epoch as placeholder)
+            //const last_time_in_stock_at_store = row.stores[storeIndex].last_time_in_stock ? new Date(row.stores[storeIndex].last_time_in_stock) : new Date(null);
+            const now = Date.now();
+            //const time_since_last_stock = now - last_time_in_stock_at_store; // calculating the # of milliseconds between now and the last time a console was seen in stock at this store
+
             // set new data
             row.stores[storeIndex].store = item.store;
             row.stores[storeIndex].in_stock = item.in_stock;
             row.stores[storeIndex].url = item.url;
             if(item.in_stock) {
-                row.stores[storeIndex].last_time_in_stock = Date.now();
+                row.stores[storeIndex].last_time_in_stock = now;
             }
 
-            let willNotify = !oldStock && item.in_stock; // if the console was previously out-of-stock, and now is in-stock, then a stock alert for this console is to be sent
+            // if the console was previously out-of-stock, and now is in-stock at this store, then typically a stock alert for this console is to be sent
+            // ...unless there was stock less than IGNORE_ALERT_WITHIN milliseconds ago, in which case do not send. 
+            // This is to cut down on "spammy" emails as consoles often float in and out of stock when they're available.
+            //const IGNORE_ALERT_WITHIN = 900000; // 15 minutes
+            //const willNotify = !oldStock && item.in_stock && time_since_last_stock > IGNORE_ALERT_WITHIN;
+            const willNotify = !oldStock && item.in_stock;
             if(willNotify) {
                 stockToNotify.push(item);
             }
@@ -226,22 +251,24 @@ async function updateStock(consoleName,data) {
 // composes and sends stock notification for a newly-in-stock console
 async function sendAlerts(data,consoleName,transporter) {
     try {
-        const subject = consoleName + " Stock Notification";
-        const text = generateText(data,consoleName);
         // map console name to console preferences in DB's User collection
         let pref_ref = {'Microsoft Xbox Series X':'series_x','Microsoft Xbox Series S':'series_s','Sony Playstation 5':'ps5','Sony Playstation 5 Digital Edition':'ps5d'};
         let toFind = {}; 
         toFind['prefs.'+pref_ref[consoleName]] = true; // generating User query filter - limiting to users who want notifications for this console
         const mailing_list = (await User.find(toFind,['email']).exec()).map(user => {return user.email; }); // get list of emails opted in to receive stock updates for the given console
-        let message = {
-            from: `"Console Stock Tracker" <${process.env.EMAIL_ADDR}>`,
-            to: `${process.env.EMAIL_ADDR}`, // sending to self for record purposes and to hide actual recipient list
-            bcc: mailing_list, // BCCing all recipients so mailing list is not visible to users (there's sometimes limits how many people can be BCC'd, so may not be an ideal scalable solution)
-            subject: subject,
-            text: text.plain,
-            html: text.html
-        };
-        await transporter.sendMail(message);
+        if(mailing_list.length > 0) { // only send email when there is at least 1 user signed up for alerts for that console
+            const subject = consoleName + " Stock Notification";
+            const text = generateText(data,consoleName);
+            let message = {
+                from: `"Console Stock Tracker" <${process.env.EMAIL_ADDR}>`,
+                to: `${process.env.EMAIL_ADDR}`, // sending to self for record purposes and to hide actual recipient list
+                bcc: mailing_list, // BCCing all recipients so mailing list is not visible to users (there's sometimes limits how many people can be BCC'd, so may not be an ideal scalable solution)
+                subject: subject,
+                text: text.plain,
+                html: text.html
+            };
+            await transporter.sendMail(message);
+        }
     }
     catch {
         console.log("Error sending email:",error);
