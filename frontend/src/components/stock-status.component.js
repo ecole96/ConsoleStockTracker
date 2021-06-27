@@ -34,14 +34,14 @@ export default class StockStatus extends Component {
         for(const element of this.state.data) { // dynamically generating stock columns (console image + stock data table)
             // console images are same as console name, but with spaces replaced with underlines, so generating image references dynamically
             console_img = `${process.env.PUBLIC_URL}/console_images/${element.console.replaceAll(' ','_')}.jpeg`;
-            tables.push(<div className="col-lg-3" key={element.console}>
+            tables.push(<div className="col-xs-12 col-md-6 col-lg-3" key={element.console}>
                             <div className="row">
-                                <div className="col-lg-12">
+                                <div className="col-12">
                                     <img src={console_img} className="img-fluid" alt={element.console} />
                                 </div>
                             </div>
                             <div className="row">
-                                <div className="col-lg-12">
+                                <div className="col-12">
                                 <StockTable table_data = {element} />
                                 </div>
                             </div>
