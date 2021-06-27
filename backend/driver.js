@@ -337,8 +337,9 @@ function main() {
                             gather(TARGET_PS5, 'Sony Playstation 5', 'Target'), gather(TARGET_PS5D, 'Sony Playstation 5 Digital Edition', 'Target'),
                             //gather(GAMESTOP_X, 'Microsoft Xbox Series X', 'Gamestop'), gather(GAMESTOP_S, 'Microsoft Xbox Series S', 'Gamestop'), 
                             //gather(GAMESTOP_PS5, 'Sony Playstation 5', 'Gamestop'), gather(GAMESTOP_PS5D, 'Sony Playstation 5 Digital Edition', 'Gamestop'),
-                            gather(NEWEGG_X, 'Microsoft Xbox Series X', 'Newegg'), gather(NEWEGG_S, 'Microsoft Xbox Series S', 'Newegg'), 
-                            gather(NEWEGG_PS5, 'Sony Playstation 5', 'Newegg'), gather(NEWEGG_PS5D, 'Sony Playstation 5 Digital Edition', 'Newegg')])
+                            //gather(NEWEGG_X, 'Microsoft Xbox Series X', 'Newegg'), gather(NEWEGG_S, 'Microsoft Xbox Series S', 'Newegg'), 
+                            //gather(NEWEGG_PS5, 'Sony Playstation 5', 'Newegg'), gather(NEWEGG_PS5D, 'Sony Playstation 5 Digital Edition', 'Newegg')
+                        ])
         .then(unorganized => {
             let organized = organize(unorganized); // sort initial store data by console
             // processing each console asynchronously, but wait until they're all done
