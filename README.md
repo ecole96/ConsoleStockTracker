@@ -1,6 +1,8 @@
 # Console Stock Tracker
 Console Stock Tracker is a webapp / service that keeps track of Microsoft Xbox Series S|X and Sony Playstation 5 (standard and Digital Edition) stock across various retailers and enables users to receive instant in-stock email notifications for the consoles they want. It is currently accessible at https://www.consolestocktracker.live/ and was developed by Evan Cole as a MERN-stack (MongoDB / Express / React / NodeJS) application.
 
+UPDATE APRIL 2021: This project has been discontinued. Just to show how it looked, here is a screenshot of the site in action before its discontinuation: https://i.imgur.com/vRqFamO.png
+
 ## How It Works
 The application consists of two parts: 
 * the back-end on the server, which polls console stock every minute by calling retailer APIs (aggregating necessary data into the app's own database and API) and sending any in-stock alerts if encountered (these are triggered when the previous run was out-of-stock and the current run is in-stock).
